@@ -87,9 +87,11 @@ func Sort(list []int) []int {
 // execution time by around x100
 func partition(leftIndex int, rightIndex int, pivotValue int, list []int) int {
 
-	// for our nested for-loops to work in our do..while, we need to move leftIndex
-	// left one index and move rightIndex right one index - ie we are starting
-	// immediately outside our segment's lower and upper bounds
+	// for our nested for-loops to work in our do..while - in Hoare's Quicksort,
+	// after a swap, the left index is incremented and the right index is
+	// decremented - we need to move leftIndex left one index and move rightIndex
+	// right one index - ie we are starting immediately outside our segment's lower
+	// and upper bounds
 	leftIndex--
 	rightIndex++
 
