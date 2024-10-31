@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-func TestSort( t *testing.T ) {
+func TestSort(t *testing.T) {
 
 	t.Run("Test 1 - with many unsorted items in list", func(t *testing.T) {
 
-		list := []int{2,1,5,4,3}
-		expectedList := []int{1,2,3,4,5}
+		list := []int{2, 1, 5, 4, 3}
+		expectedList := []int{1, 2, 3, 4, 5}
 
 		Sort(list)
 
 		if !reflect.DeepEqual(list, expectedList) {
-			t.Errorf( "Expected list to be %v. Got %v", expectedList, list )
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
 
@@ -29,7 +29,7 @@ func TestSort( t *testing.T ) {
 		Sort(list)
 
 		if !reflect.DeepEqual(list, expectedList) {
-			t.Errorf( "Expected list to be %v. Got %v", expectedList, list )
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
 
@@ -41,63 +41,63 @@ func TestSort( t *testing.T ) {
 		Sort(list)
 
 		if !reflect.DeepEqual(list, expectedList) {
-			t.Errorf( "Expected list to be %v. Got %v", expectedList, list )
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
 
 	t.Run("Test 4 - with sorted list", func(t *testing.T) {
 
-		list := []int{1,2,3,4,5}
-		expectedList := []int{1,2,3,4,5}
+		list := []int{1, 2, 3, 4, 5}
+		expectedList := []int{1, 2, 3, 4, 5}
 
 		Sort(list)
 
 		if !reflect.DeepEqual(list, expectedList) {
-			t.Errorf( "Expected list to be %v. Got %v", expectedList, list )
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
 
 	t.Run("Test 5 - with all same item", func(t *testing.T) {
 
-		list := []int{5,5,5,5,5}
-		expectedList := []int{5,5,5,5,5}
+		list := []int{5, 5, 5, 5, 5}
+		expectedList := []int{5, 5, 5, 5, 5}
 
 		Sort(list)
 
 		if !reflect.DeepEqual(list, expectedList) {
-			t.Errorf( "Expected list to be %v. Got %v", expectedList, list )
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
 
 	t.Run("Test 6 - with reverse sorted list", func(t *testing.T) {
 
-		list := []int{5,4,3,2,1}
-		expectedList := []int{1,2,3,4,5}
+		list := []int{5, 4, 3, 2, 1}
+		expectedList := []int{1, 2, 3, 4, 5}
 
 		Sort(list)
 
 		if !reflect.DeepEqual(list, expectedList) {
-			t.Errorf( "Expected list to be %v. Got %v", expectedList, list )
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
 
-	t.Run("Test 7 - sort 1,000,000 items", func(t *testing.T){
+	t.Run("Test 7 - sort 1,000,000 items", func(t *testing.T) {
 
-		t.Skip( "Skipping large dataset test")
+		t.Skip("Skipping large dataset test")
 
 		const size = 1000000
 
-		list := make( []int, 0, size )
+		list := make([]int, 0, size)
 
 		for i := 0; i < size; i++ {
-			list = append( list, rand.IntN(10000) )
+			list = append(list, rand.IntN(10000))
 			//list = append( list, i )
 		}
-		t.Log( "Before Sort with 1000000 items between 0-10000.")
+		t.Log("Before Sort with 1000000 items between 0-10000.")
 		start := time.Now()
 		Sort(list)
-		elapsed := time.Since( start )
-		t.Logf( "After Sort. Elapsed time is %v", elapsed )
+		elapsed := time.Since(start)
+		t.Logf("After Sort. Elapsed time is %v", elapsed)
 		t.Fail()
 	})
 }
@@ -123,7 +123,7 @@ func TestSwap(t *testing.T) {
 	}
 }
 
-func TestPartition( t *testing.T ) {
+func TestPartition(t *testing.T) {
 
 	t.Run("Test 1", func(t *testing.T) {
 
@@ -142,14 +142,14 @@ func TestPartition( t *testing.T ) {
 		expectedIndex := 4
 		expectedSlice := []int{2, 4, 3, 5, 1, 6, 8, 9, 7}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
@@ -175,20 +175,20 @@ func TestPartition( t *testing.T ) {
 		expectedIndex := 4
 		expectedSlice := []int{5, 3, 4, 1, 6, 9, 8, 7, 9}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
 	t.Run("Test 3", func(t *testing.T) {
 
-		s := []int{9,6,1}
+		s := []int{9, 6, 1}
 		pivotValue := 6
 
 		//  {9, 6, 1}
@@ -200,16 +200,16 @@ func TestPartition( t *testing.T ) {
 		//      R
 
 		expectedIndex := 1
-		expectedSlice := []int{1,6,9}
+		expectedSlice := []int{1, 6, 9}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
@@ -227,20 +227,20 @@ func TestPartition( t *testing.T ) {
 		expectedIndex := 0
 		expectedSlice := []int{6}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
 	t.Run("Test 5", func(t *testing.T) {
 
-		s := []int{6,7}
+		s := []int{6, 7}
 		pivotValue := 6
 
 		//  {6,7}
@@ -250,22 +250,22 @@ func TestPartition( t *testing.T ) {
 		//   R
 
 		expectedIndex := 0
-		expectedSlice := []int{6,7}
+		expectedSlice := []int{6, 7}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
 	t.Run("Test 6", func(t *testing.T) {
 
-		s := []int{7,6}
+		s := []int{7, 6}
 		pivotValue := 6
 
 		//  {7,6}
@@ -276,22 +276,22 @@ func TestPartition( t *testing.T ) {
 		//   R L
 
 		expectedIndex := 0
-		expectedSlice := []int{6,7}
+		expectedSlice := []int{6, 7}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
 	t.Run("Test 7 - everything is the pivot value", func(t *testing.T) {
 
-		s := []int{6,6,6,6,6}
+		s := []int{6, 6, 6, 6, 6}
 		pivotValue := 6
 
 		//  {6,6,6,6,6}
@@ -305,22 +305,22 @@ func TestPartition( t *testing.T ) {
 		//       R
 
 		expectedIndex := 2
-		expectedSlice := []int{6,6,6,6,6}
+		expectedSlice := []int{6, 6, 6, 6, 6}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
 	t.Run("Test 8.1 - everything else is greater than the pivot value", func(t *testing.T) {
 
-		s := []int{6,7,8,9}
+		s := []int{6, 7, 8, 9}
 		pivotValue := 6
 
 		//  {6,7,8,9}
@@ -330,22 +330,22 @@ func TestPartition( t *testing.T ) {
 		//   R
 
 		expectedIndex := 0
-		expectedSlice := []int{6,7,8,9}
+		expectedSlice := []int{6, 7, 8, 9}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 
 	t.Run("Test 8.2 - everything else is greater than the pivot value", func(t *testing.T) {
 
-		s := []int{7,8,9,6}
+		s := []int{7, 8, 9, 6}
 		pivotValue := 6
 
 		//  {7,8,9,6}
@@ -356,16 +356,16 @@ func TestPartition( t *testing.T ) {
 		//   R L
 
 		expectedIndex := 0
-		expectedSlice := []int{6,8,9,7}
+		expectedSlice := []int{6, 8, 9, 7}
 
-		i := partition( 0, len(s)-1, pivotValue, s )
+		i := partition(0, len(s)-1, pivotValue, s)
 
 		if i != expectedIndex {
-			t.Errorf( "Expected index to be %v. Got %v", expectedIndex, i )
+			t.Errorf("Expected index to be %v. Got %v", expectedIndex, i)
 		}
 
 		if !reflect.DeepEqual(s, expectedSlice) {
-			t.Errorf( "Expected slice to be %v. Got %v", expectedSlice, s )
+			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
 }

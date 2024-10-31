@@ -1,15 +1,16 @@
 package quicksort
 
-import(
+import (
 	"jamieburns.me/quicksort/stack"
 )
 
+// lifted from https://cs.opensource.google/go/x/exp/+/f66d83c2:constraints/constraints.go;l=48
 type ordered interface {
-	int | ~string
+	int | string
 }
 
 type segment struct {
-	leftIndex int
+	leftIndex  int
 	rightIndex int
 }
 
@@ -19,10 +20,10 @@ func Sort[T ordered](list []T) []T {
 
 	segmentStack := stack.Stack[segment]{}
 
-	segmentStack.Push( segment{
-		leftIndex: 0,
+	segmentStack.Push(segment{
+		leftIndex:  0,
 		rightIndex: len(list) - 1,
-		})
+	})
 
 	for {
 
@@ -40,18 +41,18 @@ func Sort[T ordered](list []T) []T {
 		}
 
 		// Calculate the midpoint index and use it to get the pivot value
-		midIndex := rightIndex - (rightIndex - leftIndex) / 2
+		midIndex := rightIndex - (rightIndex-leftIndex)/2
 		pivotValue := list[midIndex]
 
-		pivotIndex := partition( leftIndex, rightIndex, pivotValue, list )
+		pivotIndex := partition(leftIndex, rightIndex, pivotValue, list)
 
-		if ( rightIndex - leftIndex ) <= maxGuaranteedSortedSegmentSize {
+		if (rightIndex - leftIndex) <= maxGuaranteedSortedSegmentSize {
 			continue // nothing more to do here - this segment of our list is guaranteed to be sorted
 		}
 
 		if pivotIndex > leftIndex { // push our left segment onto the stack for partitioning
-			segmentStack.Push(segment{ 
-				leftIndex: leftIndex,
+			segmentStack.Push(segment{
+				leftIndex:  leftIndex,
 				rightIndex: pivotIndex,
 			})
 		}
@@ -59,8 +60,8 @@ func Sort[T ordered](list []T) []T {
 		pivotIndexPlusOne := pivotIndex + 1
 
 		if pivotIndexPlusOne < rightIndex { // push our right segment onto the stack for partitioning
-			segmentStack.Push( segment{
-				leftIndex: pivotIndexPlusOne,
+			segmentStack.Push(segment{
+				leftIndex:  pivotIndexPlusOne,
 				rightIndex: rightIndex,
 			})
 		}
@@ -71,6 +72,7 @@ func Sort[T ordered](list []T) []T {
 
 // Our leftIndex and rightIndex represent the lower and upper bounds of a segment
 // of list such that,
+//
 //	leftIndex >= 0 and <= rightIndex, AND
 //	rightIndex <= len(list)-1 and >= leftIndex
 //
@@ -80,7 +82,7 @@ func Sort[T ordered](list []T) []T {
 // - all values that are < pivotValue will be on the left of our pivotValue position, AND
 // - all values that are > pivotValue will be on the right of our pivotValue position
 //
-// We return the index of pivotValue - which might not be near the middle of segment anymore
+// # We return the index of pivotValue - which might not be near the middle of segment anymore
 //
 // Is there value in partition returning (int, []int)? Our slice will not grow or shrink as
 // Hoare's Quicksort will sort the list in-place. For now, let's rely on the knowledge of
@@ -102,10 +104,12 @@ func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T)
 	for {
 
 		// going L->R, find the index of the first value that is >= our pivot value
-		for leftIndex++ ; list[leftIndex] < pivotValue; leftIndex++ {}
+		for leftIndex++; list[leftIndex] < pivotValue; leftIndex++ {
+		}
 
 		// going R->L, find the index of the first value that is <= our pivot value
-		for rightIndex-- ; list[rightIndex] > pivotValue; rightIndex-- {}
+		for rightIndex--; list[rightIndex] > pivotValue; rightIndex-- {
+		}
 
 		if leftIndex >= rightIndex {
 			return rightIndex
@@ -117,15 +121,6 @@ func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T)
 		swap(leftIndex, rightIndex, list)
 	}
 }
-
-// func Compare[T Ordered](a, b T) int {
-//     if a < b {
-//         return -1
-//     } else if a > b {
-//         return 1
-//     }
-//     return 0
-// }
 
 func swap[T any](left int, right int, list []T) {
 	list[left], list[right] = list[right], list[left]
