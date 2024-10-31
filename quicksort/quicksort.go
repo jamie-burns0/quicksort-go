@@ -4,6 +4,10 @@ import(
 	"jamieburns.me/quicksort/stack"
 )
 
+type ordered interface {
+	int | ~string
+}
+
 type segment struct {
 	leftIndex int
 	rightIndex int
@@ -11,7 +15,7 @@ type segment struct {
 
 const maxGuaranteedSortedSegmentSize = 2
 
-func Sort(list []int) []int {
+func Sort[T ordered](list []T) []T {
 
 	segmentStack := stack.Stack[segment]{}
 
@@ -85,7 +89,7 @@ func Sort(list []int) []int {
 // Initially, the nested for-loops were run in goroutines. I thought this would be an easy
 // parallelism win. However, in this case, testing showed that utilising goroutines, **increased**
 // execution time by around x100
-func partition(leftIndex int, rightIndex int, pivotValue int, list []int) int {
+func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T) int {
 
 	// for our nested for-loops to work in our do..while - in Hoare's Quicksort,
 	// after a swap, the left index is incremented and the right index is
@@ -114,6 +118,15 @@ func partition(leftIndex int, rightIndex int, pivotValue int, list []int) int {
 	}
 }
 
-func swap(left int, right int, list []int) {
+// func Compare[T Ordered](a, b T) int {
+//     if a < b {
+//         return -1
+//     } else if a > b {
+//         return 1
+//     }
+//     return 0
+// }
+
+func swap[T any](left int, right int, list []T) {
 	list[left], list[right] = list[right], list[left]
 }
