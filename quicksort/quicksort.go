@@ -91,6 +91,15 @@ func Sort[T ordered](list []T) []T {
 // Initially, the nested for-loops were run in goroutines. I thought this would be an easy
 // parallelism win. However, in this case, testing showed that utilising goroutines, **increased**
 // execution time by around x100
+// 
+// Executing partition() on a goroutine was an improvement on the for-loop goroutines above.
+// However, testing showed that utilising goroutines here **increased** execution time
+// by around x5.
+//
+// Goroutines have been removed as the quickest execution on any unsorted list up to
+// 1000000 items is with no goroutines
+//
+// For another experiment in the use of goroutines, see AsyncSort
 func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T) int {
 
 	// for our nested for-loops to work in our do..while - in Hoare's Quicksort,
