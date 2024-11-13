@@ -4,19 +4,7 @@ import (
 	"jamieburns.me/quicksort/stack"
 )
 
-// lifted from https://cs.opensource.google/go/x/exp/+/f66d83c2:constraints/constraints.go;l=48
-type ordered interface {
-	int | string
-}
-
-type segment struct {
-	leftIndex  int
-	rightIndex int
-}
-
-const maxGuaranteedSortedSegmentSize = 2
-
-func Sort[T ordered](list []T) []T {
+func Sort2[T ordered](list []T) []T {
 
 	segmentStack := stack.Stack[segment]{}
 
@@ -44,9 +32,9 @@ func Sort[T ordered](list []T) []T {
 		midIndex := rightIndex - (rightIndex-leftIndex)/2
 		pivotValue := list[midIndex]
 
-		pivotIndex := partition(leftIndex, rightIndex, pivotValue, list)
+		pivotIndex, inOrder := partition2(leftIndex, rightIndex, pivotValue, list)
 
-		if (rightIndex - leftIndex) <= maxGuaranteedSortedSegmentSize {
+		if inOrder || (rightIndex-leftIndex) <= maxGuaranteedSortedSegmentSize {
 			continue // nothing more to do here - this segment of our list is guaranteed to be sorted
 		}
 
@@ -100,7 +88,9 @@ func Sort[T ordered](list []T) []T {
 // 1000000 items is with no goroutines
 //
 // For another experiment in the use of goroutines, see AsyncSort
-func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T) int {
+func partition2[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T) (pivotIndex int, inOrder bool) {
+
+	inOrder = true
 
 	// for our nested for-loops to work in our do..while - in Hoare's Quicksort,
 	// after a swap, the left index is incremented and the right index is
@@ -114,14 +104,25 @@ func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T)
 
 		// going L->R, find the index of the first value that is >= our pivot value
 		for leftIndex++; list[leftIndex] < pivotValue; leftIndex++ {
+			if leftIndex < len(list) {
+				if list[leftIndex] > list[leftIndex+1] {
+					inOrder = false
+				}
+			}
 		}
 
 		// going R->L, find the index of the first value that is <= our pivot value
 		for rightIndex--; list[rightIndex] > pivotValue; rightIndex-- {
+			if rightIndex > 0 {
+				if list[rightIndex] < list[rightIndex-1] {
+					inOrder = false
+				}
+			}
 		}
 
 		if leftIndex >= rightIndex {
-			return rightIndex
+			pivotIndex = rightIndex
+			return
 		}
 
 		if list[leftIndex] == list[rightIndex] {
@@ -134,9 +135,31 @@ func partition[T ordered](leftIndex int, rightIndex int, pivotValue T, list []T)
 		// - our left and right indexes haven't met or crossed AND
 		// - they are pointing to values that are positioned on the wrong side of our pivotValue
 		swap(leftIndex, rightIndex, list)
-	}
-}
 
-func swap[T any](left int, right int, list []T) {
-	list[left], list[right] = list[right], list[left]
+		// compare our leftIndex item with the items either side of it for order
+		if leftIndex > 0 {
+			if list[leftIndex] < list[leftIndex-1] {
+				inOrder = false
+			}
+		}
+
+		if leftIndex < len(list) - 1 {
+			if list[leftIndex] > list[leftIndex+1] {
+				inOrder = false
+			}
+		}
+
+		// compare our rightIndex item with the items either side of it for order
+		if rightIndex > 0 {
+			if list[rightIndex] > list[rightIndex-1] {
+				inOrder = false
+			}
+		}
+
+		if rightIndex < len(list) - 1 {
+			if list[rightIndex] < list[rightIndex+1] {
+				inOrder = false
+			}
+		}
+	}
 }

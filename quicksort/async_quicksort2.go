@@ -4,17 +4,7 @@ import (
 	"log"
 )
 
-type pivotValueSegment[T ordered] struct {
-	segment segment
-	pivotValue T
-}
-
-type pivotIndexSegment struct {
-	segment segment
-	pivotIndex int
-}
-
-var maxSegChanLen int
+const partitionGoroutines = 2
 
 // AsyncSort is an investigation into the value of breaking up Sort to run in
 // goroutines and pass data between the goroutines on channels. The implementation
@@ -38,10 +28,9 @@ var maxSegChanLen int
 // So while AsyncSort has been a good leap into learning about goroutines and
 // channels, our synchronous Sort is still by far the fastest way to sort a list
 // using Hoare's Quicksort algorithm with a midpoint pivot value strategy.
-func AsyncSort[ T ordered](list []T) []T {
+func AsyncSort2[ T ordered](list []T) []T {
 	
 	buffer := int(len(list)/20) + 1
-	//buffer := int(len(list)) + 1
 	segChan := make(chan segment, buffer)
 	pivotValueChan := make(chan pivotValueSegment[T], buffer)
 	pivotIndexChan := make(chan pivotIndexSegment, buffer)
@@ -59,24 +48,25 @@ func AsyncSort[ T ordered](list []T) []T {
 			midIndex := seg.rightIndex - (seg.rightIndex-seg.leftIndex)/2
 			pivotValue := list[midIndex]
 
-			sendSegmentToPivotValueChan(seg, pivotValue, pivotValueChan)
+			sendSegmentToPivotValueChan2(seg, pivotValue, pivotValueChan)
 		}
 	}()
 
-	go func() { // partition our segment when a pivot value is available
-		for pvSeg := range pivotValueChan {
-			//log.Printf("<-pivotValueChan [%v]\n", pvSeg)
+	for n := 0; n < partitionGoroutines; n++ {
+		go func(n int) { // partition our segment when a pivot value is available
+			for pvSeg := range pivotValueChan {
+				//log.Printf("partition[%v]: <-pivotValueChan [%v]\n", n, pvSeg)
 
-			pivotIndex, inOrder := partition2(pvSeg.segment.leftIndex, pvSeg.segment.rightIndex, pvSeg.pivotValue, list)
+				pivotIndex, inOrder := partition2(pvSeg.segment.leftIndex, pvSeg.segment.rightIndex, pvSeg.pivotValue, list)
 
-			if !inOrder {
-				sendSegmentToPivotIndexChan2(pvSeg.segment, pivotIndex, pivotIndexChan)
-			} else {
-				//log.Printf("Segment %v is in order\n", pvSeg.segment)
-				sendSegmentToDoneChan2(pvSeg.segment.leftIndex, pvSeg.segment.rightIndex, doneChan)
+				if !inOrder {
+					sendSegmentToPivotIndexChan2(pvSeg.segment, pivotIndex, pivotIndexChan)
+				} else {
+					sendSegmentToDoneChan2(pvSeg.segment.leftIndex, pvSeg.segment.rightIndex, doneChan)
+				}
 			}
-		}
-	}()
+		}(n)
+	}
 
 	go func() { // ... when a pivot index is available
 		for piSeg := range pivotIndexChan {
@@ -89,22 +79,22 @@ func AsyncSort[ T ordered](list []T) []T {
 			if (rightIndex - leftIndex) <= maxGuaranteedSortedSegmentSize {
 				// if we got to here, this segment of our list is guaranteed to be sorted
 				// We can add our segment to 
-				sendSegmentToDoneChan(leftIndex, rightIndex, doneChan)
+				sendSegmentToDoneChan2(leftIndex, rightIndex, doneChan)
 				continue
 			}
 	
 			if pivotIndex > leftIndex { // push our left segment onto the channel for partitioning
-				sendSegmentToSegChan(leftIndex, pivotIndex, segChan)
+				sendSegmentToSegChan2(leftIndex, pivotIndex, segChan)
 			} else if pivotIndex == leftIndex { // our left segment is one item long
-				sendSegmentToDoneChan(leftIndex, leftIndex, doneChan)
+				sendSegmentToDoneChan2(leftIndex, leftIndex, doneChan)
 			}
 	
 			pivotIndexPlusOne := pivotIndex + 1
 
 			if pivotIndexPlusOne < rightIndex { // push our right segment onto the stack for partitioning
-				sendSegmentToSegChan(pivotIndexPlusOne, rightIndex, segChan)
+				sendSegmentToSegChan2(pivotIndexPlusOne, rightIndex, segChan)
 			} else if pivotIndexPlusOne == rightIndex { // our right segment is one item long
-				sendSegmentToDoneChan(rightIndex, rightIndex, doneChan)
+				sendSegmentToDoneChan2(rightIndex, rightIndex, doneChan)
 			}
 		}
 	}()
@@ -138,7 +128,7 @@ func AsyncSort[ T ordered](list []T) []T {
 	return list
 }
 
-func sendSegmentToSegChan(leftIndex int, rightIndex int, segChan chan<- segment) {
+func sendSegmentToSegChan2(leftIndex int, rightIndex int, segChan chan<- segment) {
 	seg := segment{
 		leftIndex: leftIndex,
 		rightIndex: rightIndex,
@@ -152,7 +142,7 @@ func sendSegmentToSegChan(leftIndex int, rightIndex int, segChan chan<- segment)
 	//log.Printf("+segChan<- [%v]\n", seg)
 }
 
-func sendSegmentToPivotValueChan[T ordered](seg segment, pivotValue T, pivotValueChan chan<- pivotValueSegment[T]) {
+func sendSegmentToPivotValueChan2[T ordered](seg segment, pivotValue T, pivotValueChan chan<- pivotValueSegment[T]) {
 	pvSeg := pivotValueSegment[T]{
 		segment: seg,
 		pivotValue: pivotValue,
@@ -161,7 +151,7 @@ func sendSegmentToPivotValueChan[T ordered](seg segment, pivotValue T, pivotValu
 	pivotValueChan<- pvSeg
 }
 
-func sendSegmentToPivotIndexChan(seg segment, pivotIndex int, pivotIndexChan chan<- pivotIndexSegment) {
+func sendSegmentToPivotIndexChan2(seg segment, pivotIndex int, pivotIndexChan chan<- pivotIndexSegment) {
 	piSeg := pivotIndexSegment{
 		segment:    seg,
 		pivotIndex: pivotIndex,
@@ -171,7 +161,7 @@ func sendSegmentToPivotIndexChan(seg segment, pivotIndex int, pivotIndexChan cha
 	//log.Printf("+pivotIndexChan<- [%v]\n", piSeg)
 }
 
-func sendSegmentToDoneChan(leftIndex int, rightIndex int, doneChan chan<- segment) {
+func sendSegmentToDoneChan2(leftIndex int, rightIndex int, doneChan chan<- segment) {
 	seg := segment{
 		leftIndex: leftIndex,
 		rightIndex: rightIndex,
