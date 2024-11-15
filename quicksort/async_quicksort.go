@@ -1,7 +1,7 @@
 package quicksort
 
 import (
-	"log"
+	//"log"
 )
 
 type pivotValueSegment[T ordered] struct {
@@ -14,7 +14,7 @@ type pivotIndexSegment struct {
 	pivotIndex int
 }
 
-var maxSegChanLen int
+//var maxSegChanLen int
 
 // AsyncSort is an investigation into the value of breaking up Sort to run in
 // goroutines and pass data between the goroutines on channels. The implementation
@@ -26,7 +26,7 @@ var maxSegChanLen int
 // places it sends a segment to segChan. When segChan is unbuffered sending the
 // second segment will block until the first segment is received by our func that
 // is handling a segment when it is available.
-// 
+//
 // If we were only sending one segment to segChan, we might not get the deadlock
 // error. However, Hoare's Quicksort works on a divide-and-conquer strategy that
 // will divide a segment into two segments, divide each of those segments into
@@ -39,9 +39,9 @@ var maxSegChanLen int
 // channels, our synchronous Sort is still by far the fastest way to sort a list
 // using Hoare's Quicksort algorithm with a midpoint pivot value strategy.
 func AsyncSort[ T ordered](list []T) []T {
-	
-	buffer := int(len(list)/20) + 1
-	//buffer := int(len(list)) + 1
+
+	//buffer := int(len(list)/20) + 1
+	buffer := int(len(list)) + 1
 	segChan := make(chan segment, buffer)
 	pivotValueChan := make(chan pivotValueSegment[T], buffer)
 	pivotIndexChan := make(chan pivotIndexSegment, buffer)
@@ -119,21 +119,21 @@ func AsyncSort[ T ordered](list []T) []T {
 	//log.Printf("+segChan<- [%v] (seed segment)\n", seedSegment)
 
 	remaining := len(list)
-	sortedSegmentCount := 0
+	//sortedSegmentCount := 0
 
 	for {
 		doneSeg := <-doneChan
 		//log.Printf("<-doneChan [%v]\n",doneSeg)
 		remaining -= (doneSeg.rightIndex - doneSeg.leftIndex + 1)
 		//log.Printf("[remaining=%v]\n", remaining)
-		sortedSegmentCount++
+		//sortedSegmentCount++
 		if remaining == 0 {
-			log.Printf("[sortedSegmentCount=%v]\n",sortedSegmentCount)
+			//log.Printf("[sortedSegmentCount=%v]\n",sortedSegmentCount)
 			break
 		}
 	}
 
-	log.Printf("[maxSegChanLen=%v]\n",maxSegChanLen)
+	//log.Printf("[maxSegChanLen=%v]\n",maxSegChanLen)
 
 	return list
 }
@@ -144,10 +144,10 @@ func sendSegmentToSegChan(leftIndex int, rightIndex int, segChan chan<- segment)
 		rightIndex: rightIndex,
 	}
 	//log.Printf("-segChan<- [%v]\n", seg)
-	segChanLen := len(segChan)
-	if segChanLen > maxSegChanLen {
-		maxSegChanLen = segChanLen
-	}
+	// segChanLen := len(segChan)
+	// if segChanLen > maxSegChanLen {
+	// 	maxSegChanLen = segChanLen
+	// }
 	segChan<- seg
 	//log.Printf("+segChan<- [%v]\n", seg)
 }

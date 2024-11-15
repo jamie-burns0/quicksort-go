@@ -1,6 +1,7 @@
 package quicksort
 
 import (
+	"fmt"
 	"math/rand/v2"
 	"reflect"
 	"testing"
@@ -80,26 +81,125 @@ func TestSort(t *testing.T) {
 			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
 		}
 	})
+}
 
-	t.Run("Test 7 - sort 1,000,000 items", func(t *testing.T) {
+func TestPerformance(t *testing.T) {
 
-		t.Skip("Skipping large dataset test")
+	t.Run("Test 7 - sort 1,000,000 items between 0-1,000,000", func(t *testing.T) {
 
-		const size = 1000000
+		//t.Skip("Skipping performance test")
 
-		list := make([]int, 0, size)
+		const noOfItemsToSort = 1000000
 
-		for i := 0; i < size; i++ {
-			list = append(list, rand.IntN(10000))
-			//list = append( list, i )
+		csv := "\nitems,max_rand_value,Sort_ms,Sort2_ms,AsyncSort_ms,AsyncSortB_ms,AsyncSort2_ms,AsyncSort2B_ms\n"
+
+		for maxSortValue := noOfItemsToSort; maxSortValue > 1; maxSortValue /= 10 {
+			csv += _testPerformanceImpl(t, noOfItemsToSort, maxSortValue)
 		}
-		t.Log("Before Sort with 1000000 items between 0-10000.")
-		start := time.Now()
-		Sort(list)
-		elapsed := time.Since(start)
-		t.Logf("After Sort. Elapsed time is %v", elapsed)
+
+		t.Log(csv)
+
 		t.Fail()
 	})
+}
+
+func _testPerformanceImpl(t *testing.T, noOfItemsToSort int, maxSortValue int) string {
+
+	csv := fmt.Sprintf("%v,%v",noOfItemsToSort, maxSortValue)
+
+	unsortedData := make([]int, 0, noOfItemsToSort)
+
+	for i := 0; i < noOfItemsToSort; i++ {
+		unsortedData = append(unsortedData, rand.IntN(maxSortValue))
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before Sort with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		Sort(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After Sort. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before Sort2 with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		Sort2(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After Sort2. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before AsyncSort with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		AsyncSort(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After AsyncSort. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before AsyncSortB with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		AsyncSortB(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After AsyncSortB. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before AsyncSort2 with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		AsyncSort2(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After AsyncSort2. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before AsyncSort2B with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		AsyncSort2B(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After Sort. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	}
+
+	csv += fmt.Sprintf("\n")
+
+	return csv
 }
 
 func TestSwap(t *testing.T) {
