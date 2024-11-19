@@ -30,7 +30,7 @@ const partitionGoroutines = 4
 // using Hoare's Quicksort algorithm with a midpoint pivot value strategy.
 func AsyncSort2[ T ordered](list []T) []T {
 
-	//buffer := int(len(list)/20) + 1
+	// buffer := int(len(list)/20) + 1
 	buffer := int(len(list)) + 1
 	segChan := make(chan segment, buffer)
 	pivotValueChan := make(chan pivotValueSegment[T], buffer)

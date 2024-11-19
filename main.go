@@ -10,8 +10,8 @@ import (
 	"jamieburns.me/quicksort/quicksort"
 )
 
-const noOfItemsToSort = 100000000
-const maxSortValue =    10
+const noOfItemsToSort = 1000000
+const maxSortValue =    1000000
 
 func main() {
 
@@ -66,26 +66,26 @@ func main() {
 
 	// time.Sleep(1*time.Second)
 
-	{
-		unsortedInts := make([]int, noOfItemsToSort)
-		copy(unsortedInts, unsortedData)
+	// {
+	// 	unsortedInts := make([]int, noOfItemsToSort)
+	// 	copy(unsortedInts, unsortedData)
 
-		fmt.Printf("Before AsyncSort with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
-		//fmt.Printf("intsForAsyncSort: %v\n", intsForAsyncSort)
+	// 	fmt.Printf("Before AsyncSort with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+	// 	//fmt.Printf("intsForAsyncSort: %v\n", intsForAsyncSort)
 
-		start := time.Now()
-		quicksort.AsyncSort(unsortedInts)
-		elapsed := time.Since(start)
+	// 	start := time.Now()
+	// 	quicksort.AsyncSort(unsortedInts)
+	// 	elapsed := time.Since(start)
 
-		fmt.Printf("After AsyncSort. Elapsed time is %v\n", elapsed)
-		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
-	}
+	// 	fmt.Printf("After AsyncSort. Elapsed time is %v\n", elapsed)
+	// 	csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	// }
 
-	runtime.GC()
-	runtime.ReadMemStats(&memStats)
-	fmt.Printf("HeapAlloc: %v, NumGC: %v\n", memStats.HeapAlloc, memStats.NumGC)
+	// runtime.GC()
+	// runtime.ReadMemStats(&memStats)
+	// fmt.Printf("HeapAlloc: %v, NumGC: %v\n", memStats.HeapAlloc, memStats.NumGC)
 
-	time.Sleep(1*time.Second)
+	// time.Sleep(1*time.Second)
 
 	// {
 	// 	unsortedInts := make([]int, noOfItemsToSort)
@@ -107,25 +107,25 @@ func main() {
 
 	// time.Sleep(1*time.Second)
 
-	{
-		unsortedInts := make([]int, noOfItemsToSort)
-		copy(unsortedInts, unsortedData)
+	// {
+	// 	unsortedInts := make([]int, noOfItemsToSort)
+	// 	copy(unsortedInts, unsortedData)
 
-		fmt.Printf("Before AsyncSort2 with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+	// 	fmt.Printf("Before AsyncSort2 with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
 
-		start := time.Now()
-		quicksort.AsyncSort2(unsortedInts)
-		elapsed := time.Since(start)
+	// 	start := time.Now()
+	// 	quicksort.AsyncSort2(unsortedInts)
+	// 	elapsed := time.Since(start)
 
-		fmt.Printf("After AsyncSort2. Elapsed time is %v\n", elapsed)
-		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
-	}
+	// 	fmt.Printf("After AsyncSort2. Elapsed time is %v\n", elapsed)
+	// 	csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+	// }
 
-	runtime.GC()
-	runtime.ReadMemStats(&memStats)
-	fmt.Printf("HeapAlloc: %v, NumGC: %v\n", memStats.HeapAlloc, memStats.NumGC)
+	// runtime.GC()
+	// runtime.ReadMemStats(&memStats)
+	// fmt.Printf("HeapAlloc: %v, NumGC: %v\n", memStats.HeapAlloc, memStats.NumGC)
 
-	time.Sleep(1*time.Second)
+	// time.Sleep(1*time.Second)
 
 	// {
 	// 	unsortedInts := make([]int, noOfItemsToSort)
@@ -152,15 +152,15 @@ func main() {
 	{
 		unsortedCities := cities.GenerateRandomCities()
 
-		// fmt.Println("\nBefore Sort with 100 global cities in random order")
-		// fmt.Printf("Unsorted cities\n%v\n", unsortedCities)
+		fmt.Println("\nBefore Sort with 100 global cities in random order")
+		fmt.Printf("Unsorted cities\n%v\n", unsortedCities)
 
-		//start = time.Now()
-		//sortedCities := quicksort.Sort(unsortedCities)
+		start := time.Now()
+		sortedCities := quicksort.Sort(unsortedCities)
 		quicksort.Sort(unsortedCities)
-		//elapsed = time.Since(start)
+		elapsed := time.Since(start)
 
-		// fmt.Printf("Sorted cities\n%v\n", sortedCities)
-		// fmt.Printf("After Sort. Elapsed time is %v\n", elapsed)
+		fmt.Printf("Sorted cities\n%v\n", sortedCities)
+		fmt.Printf("After Sort. Elapsed time is %v\n", elapsed)
 	}
 }
