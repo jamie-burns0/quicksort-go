@@ -1,7 +1,7 @@
 package quicksort
 
 import (
-	"jamieburns.me/quicksort/stack"
+	"github.com/jamie-burns0/quicksort-go/stack"
 )
 
 // lifted from https://cs.opensource.google/go/x/exp/+/f66d83c2:constraints/constraints.go;l=48
