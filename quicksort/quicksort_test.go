@@ -1,8 +1,11 @@
 package quicksort
 
 import (
+	"fmt"
+	"math/rand/v2"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestSort(t *testing.T) {
@@ -11,6 +14,18 @@ func TestSort(t *testing.T) {
 
 		list := []int{2, 1, 5, 4, 3}
 		expectedList := []int{1, 2, 3, 4, 5}
+
+		Sort(list)
+
+		if !reflect.DeepEqual(list, expectedList) {
+			t.Errorf("Expected list to be %v. Got %v", expectedList, list)
+		}
+	})
+
+	t.Run("Test 1b - list that wasn't being sorted correctly", func(t *testing.T) {
+
+		list := []int{5,10,1,3,2,4}
+		expectedList := []int{1, 2, 3, 4, 5, 10}
 
 		Sort(list)
 
@@ -346,4 +361,68 @@ func TestPartition(t *testing.T) {
 			t.Errorf("Expected slice to be %v. Got %v", expectedSlice, s)
 		}
 	})
+}
+
+func TestBigSort(t *testing.T) {
+	t.Run("Test big sort  - sort 1M items between 0-1000000, 0-100000,...,0-10", func(t *testing.T) {
+
+		//t.Skip("Skipping performance test")
+
+		const noOfItemsToSort = 1000000
+
+		csv := "\nitems,max_rand_value,Sort_ms\n"
+
+		for maxSortValue := noOfItemsToSort; maxSortValue > 1; maxSortValue /= 10 {
+			csv += _testPerformanceImpl(t, noOfItemsToSort, maxSortValue)
+		}
+
+		t.Log(csv)
+
+		//t.Fail()
+	})
+}
+
+func _testPerformanceImpl(t *testing.T, noOfItemsToSort int, maxSortValue int) string {
+
+	csv := fmt.Sprintf("%v,%v",noOfItemsToSort, maxSortValue)
+
+	unsortedData := make([]int, 0, noOfItemsToSort)
+
+	for i := 0; i < noOfItemsToSort; i++ {
+		unsortedData = append(unsortedData, rand.IntN(maxSortValue))
+	}
+
+	{
+		unsortedInts := make([]int, noOfItemsToSort)
+		copy(unsortedInts, unsortedData)
+
+		t.Logf("Before Sort with %v items between 0-%v\n", noOfItemsToSort, maxSortValue)
+
+		start := time.Now()
+		sortedInts := Sort(unsortedInts)
+		elapsed := time.Since(start)
+
+		t.Logf("After Sort. Elapsed time is %v\n", elapsed)
+		csv += fmt.Sprintf(",%v", elapsed.Milliseconds())
+
+		_testForOrder(t, sortedInts, "Sort")
+	}
+
+	csv += "\n"
+
+	return csv
+}
+
+func _testForOrder(t *testing.T, sortedInts []int, sortedBy string) {
+	inOrder := true
+	lastElementIndex := len(sortedInts) - 1
+	for i := 0; i < lastElementIndex; i++ {
+		if sortedInts[i] > sortedInts[i+1] {
+			inOrder = false
+		}
+	}
+
+	if !inOrder {
+		t.Errorf("Expected list returned by %v to be in order", sortedBy)
+	}
 }

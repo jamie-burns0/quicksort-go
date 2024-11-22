@@ -14,7 +14,7 @@ type segment struct {
 	rightIndex int
 }
 
-const maxGuaranteedSortedSegmentSize = 2
+const unsegmentable = 1
 
 func Sort[T ordered](list []T) []T {
 
@@ -46,9 +46,12 @@ func Sort[T ordered](list []T) []T {
 
 		pivotIndex := partition(leftIndex, rightIndex, pivotValue, list)
 
-		if (rightIndex - leftIndex) <= maxGuaranteedSortedSegmentSize {
-			continue // nothing more to do here - this segment of our list is guaranteed to be sorted
+		if (rightIndex - leftIndex) <= unsegmentable {
+			continue	// this segment is too small to be segmented
+						// and will be in order
 		}
+
+		// push each segment with more than one element onto the stack
 
 		if pivotIndex > leftIndex { // push our left segment onto the stack for partitioning
 			segmentStack.Push(segment{
